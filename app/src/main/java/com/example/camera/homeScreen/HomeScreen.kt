@@ -46,7 +46,7 @@ import com.example.camera.database.UserImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(activity: Activity, builderClass: BuilderClass) {
+fun HomeScreen(activity: Activity, builderClass: BuilderClass ) {
     var allowOrNot by remember {
         mutableStateOf(false)
     }
@@ -60,6 +60,11 @@ fun HomeScreen(activity: Activity, builderClass: BuilderClass) {
         contract = ActivityResultContracts.TakePicturePreview()
     ) {
         bitmab = it
+        builderClass.run {
+            initDao().insetImage(UserImage(image = bitmab))
+        }
+        builderClass.initDao().getAllImage().also {  list = it }
+
     }
     val cameraPermition =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
@@ -77,9 +82,7 @@ fun HomeScreen(activity: Activity, builderClass: BuilderClass) {
         floatingActionButton = {
             Button(onClick = {
                 cameraPermition.launch(Manifest.permission.CAMERA)
-                builderClass.run {
-                    initDao().insetImage(UserImage(image = bitmab))
-                }
+
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_camera),
